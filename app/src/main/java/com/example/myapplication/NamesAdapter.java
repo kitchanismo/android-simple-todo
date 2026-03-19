@@ -1,6 +1,8 @@
 package com.example.myapplication;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +10,7 @@ import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import com.example.myapplication.databinding.ItemLayoutBinding;
 
@@ -45,8 +48,17 @@ public class NamesAdapter extends ArrayAdapter<String> {
         binding.txtTitle.setVisibility(isEditing ? View.GONE : View.VISIBLE);
         binding.txtEdit.setVisibility(isEditing ? View.VISIBLE : View.GONE);
         
-        // Use icons instead of text for buttons
-        binding.btnUpdate.setIconResource(isEditing ? R.drawable.ic_save : R.drawable.ic_edit);
+        // Dynamic Icon and Color for Update/Save button
+        if (isEditing) {
+            binding.btnUpdate.setIconResource(R.drawable.ic_save);
+            binding.btnUpdate.setIconTint(ColorStateList.valueOf(Color.parseColor("#4CAF50"))); // Green
+        } else {
+            binding.btnUpdate.setIconResource(R.drawable.ic_edit);
+            binding.btnUpdate.setIconTint(ColorStateList.valueOf(Color.parseColor("#FFC107"))); // Yellow/Amber
+        }
+
+        // Static Color for Delete button
+        binding.btnDelete.setIconTint(ColorStateList.valueOf(Color.parseColor("#F44336"))); // Red
 
         if (isEditing) {
             binding.txtEditText.setText(item);
