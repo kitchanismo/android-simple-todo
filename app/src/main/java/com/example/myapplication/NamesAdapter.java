@@ -30,13 +30,10 @@ public class NamesAdapter extends ArrayAdapter<String> {
         ItemLayoutBinding binding;
 
         if (convertView == null) {
-            // Use View Binding to inflate the layout
             binding = ItemLayoutBinding.inflate(LayoutInflater.from(context), parent, false);
             convertView = binding.getRoot();
-            // Store the binding object in the tag (replaces the ViewHolder)
             convertView.setTag(binding);
         } else {
-            // Retrieve the existing binding object
             binding = (ItemLayoutBinding) convertView.getTag();
         }
 
@@ -47,8 +44,9 @@ public class NamesAdapter extends ArrayAdapter<String> {
         binding.txtTitle.setText(item);
         binding.txtTitle.setVisibility(isEditing ? View.GONE : View.VISIBLE);
         binding.txtEdit.setVisibility(isEditing ? View.VISIBLE : View.GONE);
-        binding.txtEditText.setVisibility(isEditing ? View.VISIBLE : View.GONE);
-        binding.btnUpdate.setText(isEditing ? "SAVE" : "UPDATE");
+        
+        // Use icons instead of text for buttons
+        binding.btnUpdate.setIconResource(isEditing ? R.drawable.ic_save : R.drawable.ic_edit);
 
         if (isEditing) {
             binding.txtEditText.setText(item);
@@ -65,19 +63,20 @@ public class NamesAdapter extends ArrayAdapter<String> {
 
         binding.btnUpdate.setOnClickListener(v -> {
             if (editingPosition != position) {
-                // Enter Edit Mode
                 editingPosition = position;
-            } else {
-                // Save logic
-                String updatedName = binding.txtEditText.getText().toString().trim();
-                if (!updatedName.isEmpty()) {
-                    viewModel.updateName(position, updatedName);
-                }
-                editingPosition = -1;
+                notifyDataSetChanged();
+                return;
             }
-            // Refresh the UI regardless of which branch was taken
+
+            String updatedName = binding.txtEditText.getText().toString().trim();
+            if (!updatedName.isEmpty()) {
+                viewModel.updateName(position, updatedName);
+            }
+
+            editingPosition = -1;
             notifyDataSetChanged();
         });
+
         return convertView;
     }
 }
