@@ -1,0 +1,60 @@
+<!-- res/layout/item_layout.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="8dp">
+
+    <!-- Main content -->
+
+    <FrameLayout
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
+
+        <TextView
+            android:id="@+id/txtTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Item Title"
+            android:textSize="18sp" />
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/txtEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:visibility="invisible">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="107dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/txtEditText"
+                android:visibility="invisible" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+    </FrameLayout>
+
+
+    <Button
+        android:id="@+id/btnUpdate"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:paddingHorizontal="0dp"
+        android:layout_weight="1"
+        android:text="UPDATE" />
+
+    <Button
+        android:id="@+id/btnDelete"
+        android:layout_width="wrap_content"
+        android:paddingHorizontal="0dp"
+        android:layout_height="50dp"
+        android:layout_weight="1"
+        android:text="DELETE" />
+
+
+</LinearLayout>
