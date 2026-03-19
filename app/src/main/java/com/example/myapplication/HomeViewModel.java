@@ -20,7 +20,7 @@ public class HomeViewModel extends ViewModel {
         if (currentList == null) currentList = new ArrayList<>();
         currentList.add(0, newName);
         names.setValue(currentList);
-        System.out.println("added");
+        System.out.println("created");
     }
 
     public void deleteName(Integer index) {
