@@ -5,74 +5,79 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
+import com.example.myapplication.databinding.ItemLayoutBinding;
 
 import java.util.List;
 
 public class NamesAdapter extends ArrayAdapter<String> {
-    private Context context;
-    private List<String> items;
-
-    private HomeViewModel viewModel;
+    private final Context context;
+    private final HomeViewModel viewModel;
+    private int editingPosition = -1;
 
     public NamesAdapter(Context context, HomeViewModel viewModel, List<String> items) {
         super(context, R.layout.item_layout, items);
         this.context = context;
-        this.items = items;
         this.viewModel = viewModel;
     }
 
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+        ItemLayoutBinding binding;
+
         if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(R.layout.item_layout, parent, false);
+            // Use View Binding to inflate the layout
+            binding = ItemLayoutBinding.inflate(LayoutInflater.from(context), parent, false);
+            convertView = binding.getRoot();
+            // Store the binding object in the tag (replaces the ViewHolder)
+            convertView.setTag(binding);
+        } else {
+            // Retrieve the existing binding object
+            binding = (ItemLayoutBinding) convertView.getTag();
         }
 
-        TextView textView = convertView.findViewById(R.id.txtTitle);
-        TextInputLayout txtEdit = convertView.findViewById(R.id.txtEdit);
-        TextInputEditText txtEditText = convertView.findViewById(R.id.txtEditText);
-        Button btnDelete = convertView.findViewById(R.id.btnDelete);
-        Button btnUpdate = convertView.findViewById(R.id.btnUpdate);
+        String item = getItem(position);
+        boolean isEditing = (position == editingPosition);
 
-        String item = items.get(position);
-        textView.setText(item);
+        // UI Setup
+        binding.txtTitle.setText(item);
+        binding.txtTitle.setVisibility(isEditing ? View.GONE : View.VISIBLE);
+        binding.txtEdit.setVisibility(isEditing ? View.VISIBLE : View.GONE);
+        binding.txtEditText.setVisibility(isEditing ? View.VISIBLE : View.GONE);
+        binding.btnUpdate.setText(isEditing ? "SAVE" : "UPDATE");
 
-        btnDelete.setOnClickListener(v -> {
-            System.out.println("position:" + position);
+        if (isEditing) {
+            binding.txtEditText.setText(item);
+            binding.txtEditText.requestFocus();
+            if (binding.txtEditText.getText() != null) {
+                binding.txtEditText.setSelection(binding.txtEditText.getText().length());
+            }
+        }
+
+        binding.btnDelete.setOnClickListener(v -> {
+            editingPosition = -1;
             viewModel.deleteName(position);
         });
-        btnUpdate.setOnClickListener(v -> {
-            if (btnUpdate.getText().equals("UPDATE")) {
-                textView.setVisibility(View.INVISIBLE);
-                btnUpdate.setText("SAVE");
-                textView.setVisibility(View.INVISIBLE);
-                txtEdit.setVisibility(View.VISIBLE);
-                txtEditText.setVisibility(View.VISIBLE);
-                txtEditText.setText(item);
+
+        binding.btnUpdate.setOnClickListener(v -> {
+            if (editingPosition != position) {
+                // Enter Edit Mode
+                editingPosition = position;
             } else {
-                textView.setVisibility(View.VISIBLE);
-                txtEdit.setVisibility(View.INVISIBLE);
-                txtEditText.setVisibility(View.INVISIBLE);
-                btnUpdate.setText("UPDATE");
-                String text = txtEditText.getText().toString();
-                if (text.isEmpty()) {
-                    return;
+                // Save logic
+                String updatedName = binding.txtEditText.getText().toString().trim();
+                if (!updatedName.isEmpty()) {
+                    viewModel.updateName(position, updatedName);
                 }
-                viewModel.updateName(position, text);
+                editingPosition = -1;
             }
-
+            // Refresh the UI regardless of which branch was taken
+            notifyDataSetChanged();
         });
-
         return convertView;
     }
-
-
 }
