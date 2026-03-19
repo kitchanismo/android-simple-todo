@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
         viewModel.getNames().observe(this, names -> {
-            adapter = new NamesAdapter(this, viewModel, names);
+            adapter = new NamesAdapter(this, viewModel);
             binding.listView.setAdapter(adapter);
         });
 

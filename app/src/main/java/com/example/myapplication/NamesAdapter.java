@@ -10,19 +10,18 @@ import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 
 import com.example.myapplication.databinding.ItemLayoutBinding;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class NamesAdapter extends ArrayAdapter<String> {
     private final Context context;
     private final HomeViewModel viewModel;
     private int editingPosition = -1;
 
-    public NamesAdapter(Context context, HomeViewModel viewModel, List<String> items) {
-        super(context, R.layout.item_layout, items);
+    public NamesAdapter(Context context, HomeViewModel viewModel) {
+        super(context, R.layout.item_layout, new ArrayList<>(viewModel.getNames().getValue()));
         this.context = context;
         this.viewModel = viewModel;
     }
@@ -47,9 +46,14 @@ public class NamesAdapter extends ArrayAdapter<String> {
         binding.txtTitle.setText(item);
         binding.txtTitle.setVisibility(isEditing ? View.GONE : View.VISIBLE);
         binding.txtEdit.setVisibility(isEditing ? View.VISIBLE : View.GONE);
-        
+
         // Dynamic Icon and Color for Update/Save button
         if (isEditing) {
+            if (binding.txtEditText.getText() != null) {
+                binding.txtEditText.setSelection(binding.txtEditText.getText().length());
+            }
+            binding.txtEditText.setText(item);
+            binding.txtEditText.requestFocus();
             binding.btnUpdate.setIconResource(R.drawable.ic_save);
             binding.btnUpdate.setIconTint(ColorStateList.valueOf(Color.parseColor("#4CAF50"))); // Green
         } else {
@@ -59,14 +63,6 @@ public class NamesAdapter extends ArrayAdapter<String> {
 
         // Static Color for Delete button
         binding.btnDelete.setIconTint(ColorStateList.valueOf(Color.parseColor("#F44336"))); // Red
-
-        if (isEditing) {
-            binding.txtEditText.setText(item);
-            binding.txtEditText.requestFocus();
-            if (binding.txtEditText.getText() != null) {
-                binding.txtEditText.setSelection(binding.txtEditText.getText().length());
-            }
-        }
 
         binding.btnDelete.setOnClickListener(v -> {
             editingPosition = -1;
