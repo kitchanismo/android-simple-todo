@@ -57,6 +57,25 @@ public class APIService<T> {
         queue.add(request);
     }
 
+    /**
+     * Generic PUT method for updates
+     * @param path The endpoint path
+     * @param body The JSONObject with updated data
+     * @param mapper Tells us how to map the response back to T
+     * @param callback Returns the updated item T
+     */
+    public void updateItem(String path, JSONObject body, JsonMapper<T> mapper, SingleItemCallback<T> callback) {
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.PUT, url + path, body,
+                response -> {
+                    if (callback != null) {
+                        callback.onSuccess(mapper.map(response));
+                    }
+                },
+                error -> error.printStackTrace()
+        );
+        queue.add(request);
+    }
+
     public interface SingleItemCallback<T> {
         void onSuccess(T result);
     }

@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 public class PersonViewModel extends AndroidViewModel {
-    APIService api;
+    APIService<Person> api;
     private final MutableLiveData<List<Person>> persons = new MutableLiveData<>();
 
     public LiveData<List<Person>> getPersons() {
@@ -30,20 +30,19 @@ public class PersonViewModel extends AndroidViewModel {
         loadPersons();
     }
 
-    public void addPerson(Person person) {
-        List<Person> currentList = persons.getValue();
-        if (currentList == null) currentList = new ArrayList<>();
-        currentList.add(0, person);
-        persons.setValue(currentList);
+    public void addPerson(String name) {
 
         try {
             JSONObject body = new JSONObject();
-            body.put("name", person.getName());
+            body.put("name", name);
 
             api.postItem("persons", body,
                     json -> new Person(json.optString("name"), json.optString("id")),
                     newPerson -> {
-                        // Handle the new person object (e.g., add to LiveData)
+                        List<Person> currentList = persons.getValue();
+                        if (currentList == null) currentList = new ArrayList<>();
+                        currentList.add(0, newPerson);
+                        persons.setValue(currentList);
                     }
             );
         } catch (org.json.JSONException e) {
@@ -75,14 +74,23 @@ public class PersonViewModel extends AndroidViewModel {
     }
 
     public void updatePerson(Person person) {
-        List<Person> current = new ArrayList<>(persons.getValue());
-        IntStream.range(0, current.size())
-                .filter(i -> current.get(i).getId().equals(person.getId()))
-                .findFirst()
-                .ifPresent(i -> {
-                    Person p = current.get(i);
-                    current.set(i, person);
-                });
-        persons.setValue(current);
+        try {
+            JSONObject body = new JSONObject();
+            body.put("name", person.getName());
+
+            api.updateItem("persons/" + person.getId(), body,
+                    json -> new Person(json.optString("name"), json.optString("id")),
+                    updatedPerson -> {
+                        List<Person> current = new ArrayList<>(persons.getValue());
+                        IntStream.range(0, current.size())
+                                .filter(i -> current.get(i).getId().equals(updatedPerson.getId()))
+                                .findFirst()
+                                .ifPresent(i -> current.set(i, updatedPerson));
+                        persons.setValue(current);
+                    }
+            );
+        } catch (org.json.JSONException e) {
+            e.printStackTrace();
+        }
     }
 }
