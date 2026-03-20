@@ -10,7 +10,6 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.myapplication.api.APIService;
 import com.example.myapplication.databinding.ActivityMainBinding;
 import com.example.myapplication.models.Person;
 import com.example.myapplication.viewmodels.PersonViewModel;
@@ -56,10 +55,7 @@ public class MainActivity extends AppCompatActivity {
             }
             return false;
         });
-        APIService api = new APIService(this);
-        api.getPersons(result -> {
-            viewModel.setPersons(result);
-        });
+
 
     }
 }

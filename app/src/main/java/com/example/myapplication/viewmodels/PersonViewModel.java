@@ -1,21 +1,31 @@
 package com.example.myapplication.viewmodels;
 
+import android.app.Application;
+
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.AndroidViewModel;
 
+import com.example.myapplication.api.APIService;
 import com.example.myapplication.models.Person;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
-public class PersonViewModel extends ViewModel {
-
+public class PersonViewModel extends AndroidViewModel {
+    APIService api;
     private final MutableLiveData<List<Person>> persons = new MutableLiveData<>();
 
     public LiveData<List<Person>> getPersons() {
         return persons;
+    }
+
+    public PersonViewModel(@NonNull Application application) {
+        super(application);
+        api = new APIService(application);
+        loadPersons();
     }
 
     public void addPerson(Person person) {
@@ -27,6 +37,12 @@ public class PersonViewModel extends ViewModel {
 
     public void setPersons(List<Person> names) {
         persons.setValue(names);
+    }
+
+    public void loadPersons() {
+        api.getPersons(result -> {
+            persons.setValue(result);
+        });
     }
 
     public void deletePerson(String id) {
