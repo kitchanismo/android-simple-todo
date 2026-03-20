@@ -43,15 +43,15 @@ public class PersonAdapter extends ArrayAdapter<Person> {
             binding = (ItemLayoutBinding) convertView.getTag();
         }
 
-        Person item = getItem(position);
+        Person person = getItem(position);
         boolean isEditing = (position == editingPosition);
 
-        binding.txtTitle.setText(item.getName());
+        binding.txtTitle.setText(person.getName());
         binding.txtTitle.setVisibility(isEditing ? View.GONE : View.VISIBLE);
         binding.txtEdit.setVisibility(isEditing ? View.VISIBLE : View.GONE);
 
         if (isEditing) {
-            binding.txtEditText.setText(item.getName());
+            binding.txtEditText.setText(person.getName());
             binding.txtEditText.requestFocus();
             if (binding.txtEditText.getText() != null) {
                 binding.txtEditText.setSelection(binding.txtEditText.getText().length());
@@ -67,7 +67,7 @@ public class PersonAdapter extends ArrayAdapter<Person> {
 
         binding.btnDelete.setOnClickListener(v -> {
             editingPosition = -1;
-            viewModel.deletePerson(position);
+            viewModel.deletePerson(person.getId());
         });
 
         binding.btnUpdate.setOnClickListener(v -> {
@@ -79,7 +79,8 @@ public class PersonAdapter extends ArrayAdapter<Person> {
 
             String updatedName = binding.txtEditText.getText().toString().trim();
             if (!updatedName.isEmpty()) {
-                viewModel.updatePerson(position, updatedName);
+                person.setName(updatedName);
+                viewModel.updatePerson(person);
             }
 
             editingPosition = -1;

@@ -8,10 +8,11 @@ import com.example.myapplication.models.Person;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class PersonViewModel extends ViewModel {
 
-    private MutableLiveData<List<Person>> persons = new MutableLiveData<>();
+    private final MutableLiveData<List<Person>> persons = new MutableLiveData<>();
 
     public LiveData<List<Person>> getPersons() {
         return persons;
@@ -28,16 +29,21 @@ public class PersonViewModel extends ViewModel {
         persons.setValue(names);
     }
 
-    public void deletePerson(int index) {
-        List<Person> current = new ArrayList<>(persons.getValue());
-        current.remove(index);
-        persons.setValue(current);
+    public void deletePerson(String id) {
+        List<Person> person = new ArrayList<>(persons.getValue());
+        person.removeIf(p -> p.getId().equals(id));
+        persons.setValue(person);
     }
 
-    public void updatePerson(int index, String updatedName) {
+    public void updatePerson(Person person) {
         List<Person> current = new ArrayList<>(persons.getValue());
-        Person p = current.get(index);
-        current.set(index, new Person(updatedName, p.getId()));
+        IntStream.range(0, current.size())
+                .filter(i -> current.get(i).getId().equals(person.getId()))
+                .findFirst()
+                .ifPresent(i -> {
+                    Person p = current.get(i);
+                    current.set(i, person);
+                });
         persons.setValue(current);
     }
 }
