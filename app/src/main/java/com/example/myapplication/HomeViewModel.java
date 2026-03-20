@@ -6,32 +6,42 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class HomeViewModel extends ViewModel {
 
-    private MutableLiveData<List<String>> names = new MutableLiveData<>();
+    private MutableLiveData<List<Person>> names = new MutableLiveData<>();
 
-    public LiveData<List<String>> getNames() {
+    public LiveData<List<Person>> getPersons() {
         return names;
     }
 
-    public void addName(String newName) {
-        List<String> currentList = names.getValue();
+    public void setNames(List<Person> names) {
+        this.names.setValue(names);
+    }
+
+    public void addName(Person person) {
+        List<Person> currentList = names.getValue();
         if (currentList == null) currentList = new ArrayList<>();
-        currentList.add(0, newName);
+        currentList.add(0, person);
         names.setValue(currentList);
         System.out.println("created");
     }
 
-    public void deleteName(Integer index) {
-        List<String> current = new ArrayList<>(names.getValue());
-        current.remove((int) index); //add forcing to int to avoid not deleting
+    public void deleteName(String id) {
+        List<Person> current = new ArrayList<>(names.getValue());
+        current.removeIf(p -> p.getId().equals(id));
         names.setValue(current);
     }
 
-    public void updateName(Integer index, String updatedName) {
-        List<String> current = new ArrayList<>(names.getValue());
-        current.set((int) index, updatedName);
+    public void updateName(String id, Person person) {
+        List<Person> current = new ArrayList<>(names.getValue());
+
+        IntStream.range(0, current.size())
+                .filter(i -> current.get(i).getId().equals(id))
+                .findFirst()
+                .ifPresent(i -> current.set(i, person));
+
         names.setValue(current);
     }
 

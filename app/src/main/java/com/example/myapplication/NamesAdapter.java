@@ -15,13 +15,13 @@ import com.example.myapplication.databinding.ItemLayoutBinding;
 
 import java.util.ArrayList;
 
-public class NamesAdapter extends ArrayAdapter<String> {
+public class NamesAdapter extends ArrayAdapter<Person> {
     private final Context context;
     private final HomeViewModel viewModel;
     private int editingPosition = -1;
 
     public NamesAdapter(Context context, HomeViewModel viewModel) {
-        super(context, R.layout.item_layout, new ArrayList<>(viewModel.getNames().getValue()));
+        super(context, R.layout.item_layout, new ArrayList<>(viewModel.getPersons().getValue()));
         this.context = context;
         this.viewModel = viewModel;
     }
@@ -39,11 +39,11 @@ public class NamesAdapter extends ArrayAdapter<String> {
             binding = (ItemLayoutBinding) convertView.getTag();
         }
 
-        String item = getItem(position);
+        Person item = getItem(position);
         boolean isEditing = (position == editingPosition);
 
         // UI Setup
-        binding.txtTitle.setText(item);
+        binding.txtTitle.setText(item.getName());
         binding.txtTitle.setVisibility(isEditing ? View.GONE : View.VISIBLE);
         binding.txtEdit.setVisibility(isEditing ? View.VISIBLE : View.GONE);
 
@@ -52,7 +52,7 @@ public class NamesAdapter extends ArrayAdapter<String> {
             if (binding.txtEditText.getText() != null) {
                 binding.txtEditText.setSelection(binding.txtEditText.getText().length());
             }
-            binding.txtEditText.setText(item);
+            binding.txtEditText.setText(item.getName());
             binding.txtEditText.requestFocus();
             binding.btnUpdate.setIconResource(R.drawable.ic_save);
             binding.btnUpdate.setIconTint(ColorStateList.valueOf(Color.parseColor("#4CAF50"))); // Green
@@ -66,7 +66,7 @@ public class NamesAdapter extends ArrayAdapter<String> {
 
         binding.btnDelete.setOnClickListener(v -> {
             editingPosition = -1;
-            viewModel.deleteName(position);
+            viewModel.deleteName(item.getId());
         });
 
         binding.btnUpdate.setOnClickListener(v -> {
@@ -78,7 +78,7 @@ public class NamesAdapter extends ArrayAdapter<String> {
 
             String updatedName = binding.txtEditText.getText().toString().trim();
             if (!updatedName.isEmpty()) {
-                viewModel.updateName(position, updatedName);
+                viewModel.updateName(item.getId(), new Person(updatedName, item.getId()));
             }
 
             editingPosition = -1;

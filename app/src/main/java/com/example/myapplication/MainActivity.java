@@ -12,6 +12,8 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.myapplication.databinding.ActivityMainBinding;
 
+import java.util.UUID;
+
 public class MainActivity extends AppCompatActivity {
     ActivityMainBinding binding;
 
@@ -35,7 +37,8 @@ public class MainActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
-        viewModel.getNames().observe(this, names -> {
+        viewModel.getPersons().observe(this, persons -> {
+
             adapter = new NamesAdapter(this, viewModel);
             binding.listView.setAdapter(adapter);
         });
@@ -44,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
             if (binding.txtInput.getText().toString().trim().isEmpty()) {
                 return;
             }
-            viewModel.addName(binding.txtInput.getText().toString());
+            viewModel.addName(new Person(binding.txtInput.getText().toString(), UUID.randomUUID().toString()));
             binding.txtInput.setText("");
         });
 
@@ -57,6 +60,10 @@ public class MainActivity extends AppCompatActivity {
             return false;
         });
 
+        APIService api = new APIService(this);
+        api.getNames(result -> {
+            viewModel.setNames(result);
+        });
 
     }
 }
