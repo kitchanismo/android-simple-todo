@@ -76,7 +76,28 @@ public class APIService<T> {
         queue.add(request);
     }
 
+    /**
+     * Generic DELETE method
+     * @param path The endpoint path (should include ID)
+     * @param callback The callback to notify on success
+     */
+    public void deleteItem(String path, VoidCallback callback) {
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, url + path, null,
+                response -> {
+                    if (callback != null) {
+                        callback.onSuccess();
+                    }
+                },
+                error -> error.printStackTrace()
+        );
+        queue.add(request);
+    }
+
     public interface SingleItemCallback<T> {
         void onSuccess(T result);
+    }
+
+    public interface VoidCallback {
+        void onSuccess();
     }
 }

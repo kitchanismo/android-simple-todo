@@ -68,9 +68,13 @@ public class PersonViewModel extends AndroidViewModel {
     }
 
     public void deletePerson(String id) {
-        List<Person> person = new ArrayList<>(persons.getValue());
-        person.removeIf(p -> p.getId().equals(id));
-        persons.setValue(person);
+        api.deleteItem("persons/" + id, () -> {
+            List<Person> current = persons.getValue();
+            if (current == null) return;
+            List<Person> newList = new ArrayList<>(current);
+            newList.removeIf(p -> p.getId().equals(id));
+            persons.setValue(newList);
+        });
     }
 
     public void updatePerson(Person person) {
