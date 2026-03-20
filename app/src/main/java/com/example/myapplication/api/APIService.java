@@ -7,6 +7,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.myapplication.BuildConfig;
 
 import org.json.JSONObject;
 
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class APIService<T> {
-    private String url = "https://zt5gf41p-3000.asse.devtunnels.ms/";
+    private String url = BuildConfig.BASE_URL;
     private RequestQueue queue;
 
     public APIService(Context context) {
