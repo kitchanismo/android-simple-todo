@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.ui.main;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -11,17 +11,21 @@ import android.widget.ArrayAdapter;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.myapplication.R;
 import com.example.myapplication.databinding.ItemLayoutBinding;
+import com.example.myapplication.models.Person;
+import com.example.myapplication.viewmodels.PersonViewModel;
 
 import java.util.ArrayList;
 
-public class NamesAdapter extends ArrayAdapter<Person> {
+public class PersonAdapter extends ArrayAdapter<Person> {
     private final Context context;
-    private final HomeViewModel viewModel;
+    private final PersonViewModel viewModel;
     private int editingPosition = -1;
 
-    public NamesAdapter(Context context, HomeViewModel viewModel) {
-        super(context, R.layout.item_layout, new ArrayList<>(viewModel.getPersons().getValue()));
+    public PersonAdapter(Context context, PersonViewModel viewModel) {
+        super(context, R.layout.item_layout,
+                viewModel.getPersons().getValue() != null ? new ArrayList<>(viewModel.getPersons().getValue()) : new ArrayList<>());
         this.context = context;
         this.viewModel = viewModel;
     }
@@ -42,31 +46,28 @@ public class NamesAdapter extends ArrayAdapter<Person> {
         Person item = getItem(position);
         boolean isEditing = (position == editingPosition);
 
-        // UI Setup
         binding.txtTitle.setText(item.getName());
         binding.txtTitle.setVisibility(isEditing ? View.GONE : View.VISIBLE);
         binding.txtEdit.setVisibility(isEditing ? View.VISIBLE : View.GONE);
 
-        // Dynamic Icon and Color for Update/Save button
         if (isEditing) {
+            binding.txtEditText.setText(item.getName());
+            binding.txtEditText.requestFocus();
             if (binding.txtEditText.getText() != null) {
                 binding.txtEditText.setSelection(binding.txtEditText.getText().length());
             }
-            binding.txtEditText.setText(item.getName());
-            binding.txtEditText.requestFocus();
             binding.btnUpdate.setIconResource(R.drawable.ic_save);
-            binding.btnUpdate.setIconTint(ColorStateList.valueOf(Color.parseColor("#4CAF50"))); // Green
+            binding.btnUpdate.setIconTint(ColorStateList.valueOf(Color.parseColor("#4CAF50")));
         } else {
             binding.btnUpdate.setIconResource(R.drawable.ic_edit);
-            binding.btnUpdate.setIconTint(ColorStateList.valueOf(Color.parseColor("#FFC107"))); // Yellow/Amber
+            binding.btnUpdate.setIconTint(ColorStateList.valueOf(Color.parseColor("#FFC107")));
         }
 
-        // Static Color for Delete button
-        binding.btnDelete.setIconTint(ColorStateList.valueOf(Color.parseColor("#F44336"))); // Red
+        binding.btnDelete.setIconTint(ColorStateList.valueOf(Color.parseColor("#F44336")));
 
         binding.btnDelete.setOnClickListener(v -> {
             editingPosition = -1;
-            viewModel.deleteName(item.getId());
+            viewModel.deletePerson(position);
         });
 
         binding.btnUpdate.setOnClickListener(v -> {
@@ -78,7 +79,7 @@ public class NamesAdapter extends ArrayAdapter<Person> {
 
             String updatedName = binding.txtEditText.getText().toString().trim();
             if (!updatedName.isEmpty()) {
-                viewModel.updateName(item.getId(), new Person(updatedName, item.getId()));
+                viewModel.updatePerson(position, updatedName);
             }
 
             editingPosition = -1;

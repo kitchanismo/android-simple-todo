@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.models;
 
 public class Person {
     private String name;
@@ -12,10 +12,8 @@ public class Person {
     public String getName() {
         return this.name;
     }
-
+    
     public String getId() {
         return this.id;
     }
-
-
 }
