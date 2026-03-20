@@ -3,9 +3,9 @@ package com.example.myapplication.viewmodels;
 import android.app.Application;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.AndroidViewModel;
 
 import com.example.myapplication.api.APIService;
 import com.example.myapplication.models.Person;
@@ -24,7 +24,7 @@ public class PersonViewModel extends AndroidViewModel {
 
     public PersonViewModel(@NonNull Application application) {
         super(application);
-        api = new APIService(application);
+        api = new APIService<Person>(application);
         loadPersons();
     }
 
@@ -40,7 +40,13 @@ public class PersonViewModel extends AndroidViewModel {
     }
 
     public void loadPersons() {
-        api.getPersons(result -> {
+        api.getList(json -> {
+            // This is where you handle the "id" and "name" properties specifically for Person
+            return new Person(
+                    json.optString("name"),
+                    json.optString("id")
+            );
+        }, result -> {
             persons.setValue(result);
         });
     }
