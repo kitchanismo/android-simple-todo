@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.myapplication.api.APIService;
 import com.example.myapplication.databinding.ActivityMainBinding;
+import com.example.myapplication.models.Person;
 import com.example.myapplication.viewmodels.PersonViewModel;
 
 public class MainActivity extends AppCompatActivity {
@@ -44,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
             String input = binding.txtInput.getText().toString().trim();
             if (input.isEmpty()) return;
 
-            viewModel.addPerson(input);
+            viewModel.addPerson(new Person(input, String.valueOf(System.currentTimeMillis())));
             binding.txtInput.setText("");
         });
 

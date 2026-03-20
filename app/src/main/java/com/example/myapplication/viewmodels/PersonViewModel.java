@@ -17,10 +17,10 @@ public class PersonViewModel extends ViewModel {
         return persons;
     }
 
-    public void addPerson(String name) {
+    public void addPerson(Person person) {
         List<Person> currentList = persons.getValue();
         if (currentList == null) currentList = new ArrayList<>();
-        currentList.add(0, new Person(name, String.valueOf(System.currentTimeMillis())));
+        currentList.add(0, person);
         persons.setValue(currentList);
     }
 
