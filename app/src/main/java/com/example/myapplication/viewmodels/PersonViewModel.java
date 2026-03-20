@@ -10,6 +10,8 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.myapplication.api.APIService;
 import com.example.myapplication.models.Person;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -33,6 +35,21 @@ public class PersonViewModel extends AndroidViewModel {
         if (currentList == null) currentList = new ArrayList<>();
         currentList.add(0, person);
         persons.setValue(currentList);
+
+        try {
+            JSONObject body = new JSONObject();
+            body.put("name", person.getName());
+
+            api.postItem("persons", body,
+                    json -> new Person(json.optString("name"), json.optString("id")),
+                    newPerson -> {
+                        // Handle the new person object (e.g., add to LiveData)
+                    }
+            );
+        } catch (org.json.JSONException e) {
+            e.printStackTrace();
+            // Handle the error (e.g., show a message to the user)
+        }
     }
 
     public void setPersons(List<Person> names) {
@@ -40,7 +57,7 @@ public class PersonViewModel extends AndroidViewModel {
     }
 
     public void loadPersons() {
-        api.getList(json -> {
+        api.getList("persons", json -> {
             // This is where you handle the "id" and "name" properties specifically for Person
             return new Person(
                     json.optString("name"),
